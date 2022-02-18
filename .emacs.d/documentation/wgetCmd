@@ -1,0 +1,7 @@
+wget -r -l3 -m www.site.com
+
+	-r = recursive
+	-l = depth
+	-k = convert links to point to other local files
+	-m = for compleate backup. Takes away the need for -r, -k and -l
+	
