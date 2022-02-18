@@ -1,1 +1,3 @@
-The files are hidded. That is their names start with a ".".
+The folder "emacs.d" should be placed in the readers home folder and renamed to
+".emacs.d"
+
