@@ -1,3 +1,7 @@
 The folder "emacs.d" should be placed in the readers home folder and renamed to
 ".emacs.d"
 
+The license of course only applies to code that we've written. As far as we know
+any code that we haven't written apart from two functions in our init.el file
+have the authors names included in them.
+
