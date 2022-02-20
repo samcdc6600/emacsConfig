@@ -50,12 +50,12 @@
 ;; (load-theme 'ujelly t)
 ;; (load-theme 'billw t)
 ;; (load-theme 'borland-blue t) ;*
-;; (load-theme 'cherry-blossom t) ; ***
+(load-theme 'cherry-blossom t) ; ***
 ;; (load-theme 'clarity t)
 ;; (load-theme 'comidia t)
 ;; (load-theme 'evenhold t) ; *
 ;; (load-theme 'night-owl t)
-(load-theme 'purple-haze t) ; ***
+;;(load-theme 'purple-haze t) ; ***
 ;; (load-theme 'zweilight t)
 
 ;; Theme Stuff - End ===========================================================
@@ -81,6 +81,10 @@
 (defun sb-asterisk-comment ()
   "Generally intended for use with add-hook to set comment-start for mode."
   (setq-local comment-start "*	"))
+
+(defun sb-semicolon-comment ()
+  "Generally intended for use with add-hook to set comment-start for mode."
+  (setq-local comment-start "; "))
 
 ;; The following two functions are taken from the book "GNU Emacs and
 ;; XEmacs" and thus aren't written by us. In any case we choose to put
@@ -159,6 +163,9 @@
 (add-hook 'java-mode-hook 'fci-mode)
 ;; Add "*	" as the comment for text mode!
 (add-hook 'text-mode-hook 'sb-asterisk-comment)
+;; Add "; " as the comment for asm mode!
+(eval-after-load "asm"
+  (add-hook 'asm-mode-hook 'sb-semicolon-comment))
 
 ;; Hooks - End =================================================================
 
