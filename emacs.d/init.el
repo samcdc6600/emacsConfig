@@ -161,6 +161,34 @@
 (add-hook 'shell-script-mode-hook 'fci-mode)
 (add-hook 'emacs-lisp-mode-hook 'fci-mode)
 (add-hook 'java-mode-hook 'fci-mode)
+;; Change fill column width for mode...
+(add-hook 'text-mode-hook
+	  (lambda ()
+            (set-fill-column 80)))
+(add-hook 'c-mode-hook
+	  (lambda ()
+            (set-fill-column 80)))
+(add-hook 'c++-mode-hook
+	  (lambda ()
+            (set-fill-column 80)))
+(add-hook 'html-mode-hook
+	  (lambda ()
+            (set-fill-column 80)))
+(add-hook 'asm-mode-hook
+	  (lambda ()
+            (set-fill-column 80)))
+(add-hook 'css-mode-hook
+	  (lambda ()
+            (set-fill-column 80)))
+(add-hook 'shell-script-mode-hook
+	  (lambda ()
+            (set-fill-column 80)))
+(add-hook 'emacs-lisp-mode-hook
+	  (lambda ()
+            (set-fill-column 80)))
+(add-hook 'java-mode-hook
+	  (lambda ()
+            (set-fill-column 80)))
 ;; Add "*	" as the comment for text mode!
 (add-hook 'text-mode-hook 'sb-asterisk-comment)
 ;; Add "; " as the comment for asm mode!
