@@ -211,6 +211,51 @@
 ;; Load Emacs 24's Package System, Add MELPA Repository - End ==================
 
 
+;; Install Use-Package (MELPA must be setup first) =============================
+;; =============================================================================
+(unless (package-installed-p 'use-package)
+  (package-refresh-contents)
+  (package-install 'use-package))
+;; Setting use-package-always-ensure to t means we don't have to specify
+;; :ensure t in packages we’d like to declare and install using use-package.
+;; Ensure makes sure packages are installed at startup.
+(eval-and-compile
+  (setq use-package-always-ensure t
+        use-package-expand-minimally t))
+;; =============================================================================
+
+
+;; LSP (Language Server Protocol) Mode - Start =================================
+;; =============================================================================
+;; NOTE: FOR C++ !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+;; For c++-mode we need Clangd. This can be installed on FreeBSD by installing
+;; llvm. A compile_commands.json is required in the root of the project
+;; directory. One can be generated using this site (assuming you've got a make
+;; file.): https://texttoolkit.com/compilation-database-generator
+;; Sadly we've not found a better way yet.
+(use-package lsp-mode
+  :hook ((c++-mode) . lsp-deferred) ; XYZ are to be replaced by python, c++, etc.
+  :commands lsp
+  :init
+  (setq lsp-keymap-prefix "C-c m"))
+(use-package lsp-ui
+  :commands lsp-ui-mode
+  :config
+  (setq lsp-ui-doc-enable nil)
+  (setq lsp-ui-doc-header t)
+  (setq lsp-ui-doc-include-signature t)
+  (setq lsp-ui-doc-border (face-foreground 'default))
+  (setq lsp-ui-sideline-show-code-actions t)
+  (setq lsp-ui-sideline-delay 0.05))
+(use-package company)			; Needed for nice auto completion list.
+
+;; (use-package lsp-mode
+;; 	     :commands (lsp lsp-deferred)
+;; 	     :init
+;; 	     (setq lsp-keymap-prefix "C-c m"))
+;; LSP (Language Server Protocol) Mode - End ===================================
+
+
 ;; Melpa And Customize Stuff - Start ===========================================
 ;; =============================================================================
 
@@ -231,7 +276,7 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(package-selected-packages '(use-package))
+ '(package-selected-packages '(company company-mode lsp-ui lsp-mode use-package))
  '(show-paren-mode t))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
