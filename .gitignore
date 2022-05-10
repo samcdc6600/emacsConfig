@@ -2,3 +2,4 @@ emacs.d/auto-save-list/*
 emacs.d/*~
 emacs.d/lisp/*~
 emacs.d/lisp/themes/*~
+emacs.d/.lsp-session-v1

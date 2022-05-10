@@ -67,9 +67,11 @@
       (kmacro-lambda-form [?\C-x ?^] 0 "%d"))
 (global-set-key (kbd "<f9>") 'sb-expand-window-vertically)
 
+
 (fset 'sb-expand-window-horizontally
       (kmacro-lambda-form [?\C-x ?\}] 0 "%d"))
 (global-set-key (kbd "<f8>") 'sb-expand-window-horizontally)
+
 
 (defun sb-line-length ()
   "Returns the length of the line a point."
@@ -78,13 +80,51 @@
      (setq len (- (line-end-position) (line-beginning-position)))
      (message "Line length at point is: %d" len)))
 
+
+(defun sb-region-length-inl ()
+  "Prints the number of characters in the selected region (including new lines)
+in the mini buffer."
+  (interactive)
+  (if (use-region-p)			; Return t if the region is active and
+					; it is appropriate to act on it. 
+					; '?' is used for regular expressions.
+					; If true.
+  (let (len)
+    (setq len (- (region-end) (region-beginning)))
+    (message "There are %s characters." len))
+  					; Else.
+  (message "Error no region selected.")))
+
+
+(defun sb-region-length ()
+  "Prints the number of characters in the selected region (minus new line
+characters) in the mini buffer."
+  (interactive)
+  (if (use-region-p)
+      (message
+       "There are %s characters (less any \"\\n\" characters.)"
+       (- (region-end) (region-beginning)
+	  (get-count
+	   '?\n
+	   (buffer-substring
+	    (region-beginning) (region-end)))))
+    (message "Error no region selected.")))
+
+
+(defun get-count (regexp str)
+  "Returns the number of occurrences of regexp in str."
+  (cl-count regexp str))
+
+
 (defun sb-asterisk-comment ()
   "Generally intended for use with add-hook to set comment-start for mode."
   (setq-local comment-start "*	"))
 
+
 (defun sb-semicolon-comment ()
   "Generally intended for use with add-hook to set comment-start for mode."
   (setq-local comment-start "; "))
+
 
 ;; The following two functions are taken from the book "GNU Emacs and
 ;; XEmacs" and thus aren't written by us. In any case we choose to put
@@ -107,6 +147,7 @@
   (goto-char (point-min))
   (while (search-forward "\r" nil t) (replace-match ""))
   (message "Operation complete.")))
+
 
 (defun unix-new-lines-to-dos-new-lines() ; Convert Unix text file to
 					; DOS text file.
