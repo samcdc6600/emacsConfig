@@ -6,7 +6,6 @@
 (add-to-list 'load-path "~/.emacs.d/lisp")
 (add-to-list 'custom-theme-load-path
 	     "~/.emacs.d/lisp/themes/")
-
 ;; Alter Load Paths - End ======================================================
 
 
@@ -24,10 +23,39 @@
 					; should match up fairly
 					; nicely with the purple-haze theme.)
 (setq fci-rule-character (string-to-number "2588" 16)) ; 2591
-
 (load "xclip-1.9")
 (xclip-mode 1)
+;; Enable flash at point when point jumps in position.
+(beacon-mode 1)
+(setq beacon-color "#660ac2")
+;; This only seems to work sometimes. Other times it's just very fast :'(
+(setq beacon-blink-duration 0.9) ; Set fade-out duration to x seconds
+;; Disable welcome buffer.
+(setq inhibit-startup-screen t)
+;; These are annoying in GUI mode.
+(tool-bar-mode 0)
+(scroll-bar-mode 0)
 
+;; When creating a new window in GUI mode with "make-frame" and then closing
+;; that (or the original) frame both frames will close (or all open
+;; frames). Using this code we can make sure that only the current frame will
+;; close and if it is the only frame and changes have been made in any of the
+;; buffers then save-buffers-kill-emacs will be called instead of delete-frame
+;; and emacs will ask if you really want to quit.
+(when window-system
+  (defun close-current-frame ()
+    "Close the current frame.
+If the frame being closed is the sole visible or iconified frame,
+exit Emacs."
+    (interactive)
+    (if (or (null (visible-frame-list))
+            (null (cdr (visible-frame-list))))
+	(save-buffers-kill-emacs)
+      (delete-frame)))
+
+  (global-set-key (kbd "C-x C") 'close-current-frame)
+
+  (global-set-key (kbd "C-x C-c") #'close-current-frame))
 ;; Misc Stuff - End ============================================================
 
 
@@ -63,14 +91,35 @@
 
 ;; SB Custom Functions - Start =================================================
 ;; =============================================================================
-(fset 'sb-expand-window-vertically
-      (kmacro-lambda-form [?\C-x ?^] 0 "%d"))
-(global-set-key (kbd "<f9>") 'sb-expand-window-vertically)
+(defun sb-expand-window-vertically ()
+  "Expands the current window vertically by 1 row."
+  (interactive)
+  (enlarge-window 1))
+(global-set-key (kbd "<f8>") 'sb-expand-window-vertically)
 
 
-(fset 'sb-expand-window-horizontally
-      (kmacro-lambda-form [?\C-x ?\}] 0 "%d"))
-(global-set-key (kbd "<f8>") 'sb-expand-window-horizontally)
+(defun sb-shrink-window-vertically ()
+  "Shrink the current window vertically by 1 row."
+  (interactive)
+  (shrink-window 1))
+(global-set-key (kbd "<f7>") 'sb-shrink-window-vertically)
+
+
+(defun sb-expand-window-horizontally ()
+  "Expand the current window horizontally by 1 column."
+  (interactive)
+  (enlarge-window-horizontally 1))
+(global-set-key (kbd "<f6>") 'sb-expand-window-horizontally)
+
+
+;; This is needed for minimap since we cannot switch to the minimap buffer to
+;; enlarge it. We also add vertically just for completeness and we might
+;; actually we it now that we are thinking about it.
+(defun sb-shrink-window-horizontally ()
+  "Shrink the current window horizontally by 1 column."
+  (interactive)
+  (shrink-window-horizontally 1))
+(global-set-key (kbd "<f5>") 'sb-shrink-window-horizontally)
 
 
 (defun sb-line-length ()
@@ -157,7 +206,6 @@ characters) in the mini buffer."
     (goto-char (point-min))
     (while (search-forward "\n" nil t) (replace-match "\r\n"))
     (message "Operation complete")))
-
 ;; SB Custom Functions - End ===================================================
 
 
@@ -169,7 +217,6 @@ characters) in the mini buffer."
 ;; Flyspell-correct-ivy has to be installed using melpa.
 (require 'flyspell-correct-ivy)
 (define-key flyspell-mode-map (kbd "C-c $") 'flyspell-correct-wrapper)
-
 ;; Spell Checking - End ========================================================
 
 
@@ -230,12 +277,22 @@ characters) in the mini buffer."
 (add-hook 'java-mode-hook
 	  (lambda ()
             (set-fill-column 80)))
+;; Enable minimap minor mode for major modes.
+;; NOTE THAT MINIMAP ONLY WORKS CORRECTLY IN GUI MODE. SO WE CHECK FOR THAT
+;; HERE.
+(when window-system
+  (add-hook 'c-mode-hook		'minimap-mode)
+  (add-hook 'c++-mode-hook		'minimap-mode)
+  (add-hook 'css-mode-hook	 	'minimap-mode)
+  (add-hook 'shell-script-mode-hook	'minimap-mode)
+  (add-hook 'emacs-lisp-mode-hook	'minimap-mode)
+  (add-hook 'java-mode-hook		'minimap-mode))
+
 ;; Add "*	" as the comment for text mode!
 (add-hook 'text-mode-hook 'sb-asterisk-comment)
 ;; Add "; " as the comment for asm mode!
 (eval-after-load "asm"
   (add-hook 'asm-mode-hook 'sb-semicolon-comment))
-
 ;; Hooks - End =================================================================
 
 
@@ -248,7 +305,6 @@ characters) in the mini buffer."
    ;; '("melpa" . "http://stable.melpa.org/packages/") ; many packages won't show if using stable
    '("melpa" . "https://melpa.org/packages/")
    t))
-
 ;; Load Emacs 24's Package System, Add MELPA Repository - End ==================
 
 
@@ -263,6 +319,22 @@ characters) in the mini buffer."
 (eval-and-compile
   (setq use-package-always-ensure t
         use-package-expand-minimally t))
+;; =============================================================================
+
+
+;; Minimap  Mode - Start =======================================================
+;; =============================================================================
+;; NOTE THAT MINIMAP ONLY WORKS CORRECTLY IN GUI MODE. SO WE CHECK FOR THAT
+;; HERE. 
+(when window-system
+  (use-package minimap
+    :ensure t)
+  
+  (set-face-attribute 'minimap-font-face nil :height 42)
+  
+  (custom-set-faces
+   '(minimap-active-region-background
+     ((t (:background "#19062d"))))))
 ;; =============================================================================
 
 
@@ -282,6 +354,12 @@ characters) in the mini buffer."
 (use-package lsp-ui
   :commands lsp-ui-mode
   :config
+  ;; USE lsp-toggle-on-type-formatting to disable annoying auto formatting when
+  ;; pressing enter. This is a function and so we don't think we can use setq to
+  ;; call is. We don't understand exactly how use-package works and thus aren't
+  ;; going to fix this right now. This is just a note so that we know how to
+  ;; disable it even if we need to do it manually and so that we can fix it
+  ;; latter. 
   (setq lsp-ui-doc-enable nil)
   (setq lsp-ui-doc-header t)
   (setq lsp-ui-doc-include-signature t)
@@ -317,7 +395,8 @@ characters) in the mini buffer."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(package-selected-packages '(company company-mode lsp-ui lsp-mode use-package))
+ '(package-selected-packages
+   '(fira-code-mode beacon fancy-narrow company company-mode lsp-ui lsp-mode use-package))
  '(show-paren-mode t))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
@@ -325,3 +404,4 @@ characters) in the mini buffer."
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  )
+(put 'downcase-region 'disabled nil)
