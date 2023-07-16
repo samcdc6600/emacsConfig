@@ -12,10 +12,13 @@
 ;; Misc Stuff - Start ==========================================================
 ;; =============================================================================
 ;; If no suffix is specified Emacs will look for .elc before .el
+;; If sb-fci-column-width is changed sb-fci-column-width-minimap in minimap.el
+;; should also be changed.
+(setq sb-fci-column-width 80)
 (load "fill-column-indicator")
 (add-hook 'after-change-major-mode-hook 'fci-mode)
 (setq fci-mode 0)
-(setq fci-rule-column 80)
+(setq fci-rule-column sb-fci-column-width)
 (setq fci-rule-width 1)
 (setq fci-rule-color "#4d2e6b")			       ; Theme may
 					; override this (currently we
@@ -252,31 +255,31 @@ characters) in the mini buffer."
 ;; Change fill column width for mode...
 (add-hook 'text-mode-hook
 	  (lambda ()
-            (set-fill-column 80)))
+            (set-fill-column sb-fci-column-width)))
 (add-hook 'c-mode-hook
 	  (lambda ()
-            (set-fill-column 80)))
+            (set-fill-column sb-fci-column-width)))
 (add-hook 'c++-mode-hook
 	  (lambda ()
-            (set-fill-column 80)))
+            (set-fill-column sb-fci-column-width)))
 (add-hook 'html-mode-hook
 	  (lambda ()
-            (set-fill-column 80)))
+            (set-fill-column sb-fci-column-width)))
 (add-hook 'asm-mode-hook
 	  (lambda ()
-            (set-fill-column 80)))
+            (set-fill-column sb-fci-column-width)))
 (add-hook 'css-mode-hook
 	  (lambda ()
-            (set-fill-column 80)))
+            (set-fill-column sb-fci-column-width)))
 (add-hook 'shell-script-mode-hook
 	  (lambda ()
-            (set-fill-column 80)))
+            (set-fill-column sb-fci-column-width)))
 (add-hook 'emacs-lisp-mode-hook
 	  (lambda ()
-            (set-fill-column 80)))
+            (set-fill-column sb-fci-column-width)))
 (add-hook 'java-mode-hook
 	  (lambda ()
-            (set-fill-column 80)))
+            (set-fill-column sb-fci-column-width)))
 ;; Enable minimap minor mode for major modes.
 ;; NOTE THAT MINIMAP ONLY WORKS CORRECTLY IN GUI MODE. SO WE CHECK FOR THAT
 ;; HERE.
@@ -335,6 +338,11 @@ characters) in the mini buffer."
   (custom-set-faces
    '(minimap-active-region-background
      ((t (:background "#19062d"))))))
+
+;; Default is 0.15
+(setq minimap-width-fraction 0.12)
+;; Default is 30
+(setq minimap-minimum-width 22)
 ;; =============================================================================
 
 
