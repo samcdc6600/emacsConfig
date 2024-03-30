@@ -28,6 +28,8 @@
 (setq fci-rule-character (string-to-number "2588" 16)) ; 2591
 (load "xclip-1.9")
 (xclip-mode 1)
+;; Set font height (default seems to be 98 (which is one larger.))
+(set-face-attribute 'default nil :height 90)
 ;; Enable flash at point when point jumps in position.
 (beacon-mode 1)
 (setq beacon-color "#660ac2")
@@ -64,6 +66,8 @@ exit Emacs."
 
 ;; Theme Stuff - Start =========================================================
 ;; =============================================================================
+;; We will enable transparency!
+(set-frame-parameter (selected-frame) 'alpha '(95 . 92))
 ;; (load-theme 'soothe t)
 					; Sooth seem's to set
 					; something that most of the
@@ -168,6 +172,28 @@ characters) in the mini buffer."
   (cl-count regexp str))
 
 
+(defun sb-region-to-camel-case (start end)
+  "Convert the selected region to camel case, preserving punctuation (this is
+useful for making longer posts on Twitter (sorry... erm X...) Note that this
+  function won't work properly if there is any punctuation that has white space
+  on both sides. It will also get ride of capital letters not at the start of a
+  word. We need to fix these issues, however our elisp skills are currently not
+  very strong, so we leave this as a task for some future time."
+  (interactive "r")
+  (let* ((regionText (buffer-substring start end))
+         (words (split-string regionText "[[:space:]\n\r\t]+" t))
+         (result "")
+         (punctuation ""))
+    (while words
+      (let ((word (car words)))
+        (setq words (cdr words))
+        (if (string-match-p "[a-zA-Z0-9]" word)
+            (setq result (concat result punctuation (capitalize (downcase word))))
+          (setq punctuation (concat punctuation word))))) ; Fix here
+    (delete-region start end)
+    (insert result)))
+
+
 (defun sb-asterisk-comment ()
   "Generally intended for use with add-hook to set comment-start for mode."
   (setq-local comment-start "*	"))
@@ -232,6 +258,12 @@ characters) in the mini buffer."
 (add-hook 'prog-mode-hook 'flyspell-prog-mode)
 ;; (dolist (hook '(prog-mode-hook))
 ;;   (add-hook hook (lambda () (flyspell-prog-mode 1))))
+;; Do a sort of "global enable for flyspell when in php mode, because it only
+;; works for comments otherwise!
+(add-hook 'php-mode-hook (lambda ()
+                           (setq flyspell-generic-check-word-predicate
+				 'flyspell-generic-progmode-check-word-p)))
+(add-hook 'php-mode-hook 'flyspell-prog-mode)
 ;; Turn on auto-fill-mode...
 (add-hook 'text-mode-hook 'auto-fill-mode)
 (add-hook 'c-mode-hook 'auto-fill-mode)
@@ -333,14 +365,14 @@ characters) in the mini buffer."
   (use-package minimap
     :ensure t)
   
-  (set-face-attribute 'minimap-font-face nil :height 42)
+  (set-face-attribute 'minimap-font-face nil :height 48)
   
   (custom-set-faces
    '(minimap-active-region-background
      ((t (:background "#19062d"))))))
 
 ;; Default is 0.15
-(setq minimap-width-fraction 0.12)
+(setq minimap-width-fraction 0.21)
 ;; Default is 30
 (setq minimap-minimum-width 22)
 ;; =============================================================================
@@ -404,12 +436,12 @@ characters) in the mini buffer."
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(fira-code-mode beacon fancy-narrow company company-mode lsp-ui lsp-mode use-package))
+   '(php-mode fira-code-mode beacon fancy-narrow company company-mode lsp-ui lsp-mode use-package))
  '(show-paren-mode t))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- )
+ '(minimap-active-region-background ((t (:background "#19062d")))))
 (put 'downcase-region 'disabled nil)
